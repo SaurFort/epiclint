@@ -7,6 +7,7 @@ import { scanTarget } from "./scanner";
 import { checkFmtRules } from "./rules/fmt_rules";
 import { checkTypeRules } from "./rules/type_rules";
 import { API } from "typescript/unstable/sync";
+import { checkVarRules } from "./rules/var_rules";
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
@@ -58,6 +59,7 @@ function main(): void {
                 continue;
 
             issues.push(...checkTypeRules(filePath, sourceFile));
+            issues.push(...checkVarRules(filePath, sourceFile));
         }
     } finally {
         snapshot.dispose();
