@@ -1,5 +1,10 @@
 # epiclint
 
+> [!WARNING]\
+> Some rules present in [the rules file](./docs/rules.md) are not yet implemented and will come soon.
+
+This is an unofficial linter for Epitech TypeScript projects inspired by the Epitech C Coding Style.
+
 ## How to install
 
 You can install it with `npm`.
