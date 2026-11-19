@@ -5,6 +5,8 @@ import { LintIssue } from "./types";
 import { existsSync, readFileSync } from "node:fs";
 import { scanTarget } from "./scanner";
 import { checkFmtRules } from "./rules/fmt_rules";
+import { checkTypeRules } from "./rules/type_rules";
+import { API } from "typescript/unstable/sync";
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
@@ -42,6 +44,24 @@ function main(): void {
         const content = readFileSync(filePath, "utf-8");
 
         issues.push(...checkFmtRules(filePath, content));
+    }
+
+    const api = new API({})
+    const snapshot = api.updateSnapshot({ openFiles: tsFiles });
+
+    try {
+        for (const filePath of tsFiles) {
+            const project = snapshot.getDefaultProjectForFile(filePath);
+            const sourceFile = project?.program.getSourceFile(filePath);
+
+            if (sourceFile === undefined)
+                continue;
+
+            issues.push(...checkTypeRules(filePath, sourceFile));
+        }
+    } finally {
+        snapshot.dispose();
+        api.close();
     }
 
     issues.sort((a: LintIssue, b: LintIssue): number => {
