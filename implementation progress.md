@@ -32,7 +32,7 @@
 
 - [x] `TYPE-01` (`ERROR`) - Prohibition of `any`
 - [x] `TYPE-02` (`ERROR`) - Prohibition of non-null assertions (`!`)
-- [ ] `TYPE-03` (`ERROR`) - Explicit return type on functions
+- [x] `TYPE-03` (`MAJOR`) - Explicit return type on functions
 
 ### 6. Naming Conventions (`NAME`)
 

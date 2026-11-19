@@ -29,7 +29,7 @@ Here you will find all the rules of `epiclint`, inspired by the Epitech Coding S
   - [5. Strict TypeScript Typing (`TYPE`)](#5-strict-typescript-typing-type)
     - [`TYPE-01` (`ERROR`) - Prohibition of `any`](#type-01-error---prohibition-of-any)
     - [`TYPE-02` (`ERROR`) - Prohibition of non-null assertions (`!`)](#type-02-error---prohibition-of-non-null-assertions-)
-    - [`TYPE-03` (`ERROR`) - Explicit return type on functions](#type-03-error---explicit-return-type-on-functions)
+    - [`TYPE-03` (`MAJOR`) - Explicit return type on functions](#type-03-major---explicit-return-type-on-functions)
   - [6. Naming Conventions (`NAME`)](#6-naming-conventions-name)
     - [`NAME-01` (`INFO`) - Variables and functions (`camelCase`)](#name-01-info---variables-and-functions-camelcase)
     - [`NAME-02` (`INFO`) - Type structures (`PascalCase`)](#name-02-info---type-structures-pascalcase)
@@ -141,7 +141,7 @@ Explicit `: any` annotations (as well as `as any` casts) are strictly forbidden.
 
 The postfix non-null assertion operator `!` (e.g., `req.user!.id`) is forbidden. You should explicitly check for nullability.
 
-### `TYPE-03` (`ERROR`) - Explicit return type on functions
+### `TYPE-03` (`MAJOR`) - Explicit return type on functions
 
 Every named function, class method, or arrow function assigned to a variable must explicitly declare its return type (e.g., `: void`, `: number`, ...).
 
