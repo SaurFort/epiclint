@@ -33,7 +33,11 @@ function formatSeverity(severity: LintIssue["severity"]): string {
 
 function cmdHelp(target: string): boolean {
     if (target === "--help" || target === "-h") {
-        console.log("Usage: epiclint [path]\n\nOptions:\n -h, --help    Show help\n -v, --version   Show version");
+        console.log(
+            "Usage: epiclint [path]\n\nOptions:\n" +
+            " -h, --help    Show help\n" +
+            " -v, --version   Show version"
+        );
         return true;
     }
 
