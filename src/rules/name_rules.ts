@@ -2,6 +2,7 @@ import {
     isClassDeclaration,
     isEnumDeclaration,
     isInterfaceDeclaration,
+    isPropertySignatureDeclaration,
     isTypeAliasDeclaration,
     Node,
     SourceFile
@@ -10,7 +11,8 @@ import { LintIssue, NodeRule } from "../types";
 import { getPosition } from "../utils/position";
 
 const NAME_NODE_RULES: readonly NodeRule[] = [
-    checkName02
+    checkName02,
+    checkName04
 ];
 
 export function checkNameRules(filePath: string, sourceFile: SourceFile): LintIssue[] {
@@ -52,5 +54,24 @@ function checkName02(filePath: string, sourceFile: SourceFile, node: Node): Lint
         code: "NAME-02",
         severity: "info",
         message: "Bad naming practice on type structure's name, you should use 'camelCase'"
+    };
+}
+
+function checkName04(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (!isPropertySignatureDeclaration(node))
+        return null;
+    if (/^[a-z][a-zA-Z0-9]*$/.test(node.name.getText()))
+        return null;
+    if (/^[a-z][a-z0-9_]*$/.test(node.name.getText()))
+        return null;
+    const pos = getPosition(sourceFile, node);
+
+    return {
+        filePath,
+        line: pos.line,
+        column: pos.column,
+        code: "NAME-04",
+        severity: "info",
+        message: "Bad naming practice on properties, you should use 'camelCase' or 'snake_case'"
     };
 }

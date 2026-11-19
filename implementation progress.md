@@ -36,7 +36,7 @@
 
 ### 6. Naming Conventions (`NAME`)
 
-- [ ] `NAME-01` (`MINOR`) - Variables and functions (`camelCase`)
-- [x] `NAME-02` (`MINOR`) - Type structures (`PascalCase`)
-- [ ] `NAME-03` (`MINOR`) - Global constants and enum members (`UPPER_SNAKE_CASE`)
-- [ ] `NAME-04` (`MINOR`) - Interface and object type properties
+- [ ] `NAME-01` (`INFO`) - Variables and functions (`camelCase`)
+- [x] `NAME-02` (`INFO`) - Type structures (`PascalCase`)
+- [ ] `NAME-03` (`INFO`) - Global constants and enum members (`UPPER_SNAKE_CASE`)
+- [x] `NAME-04` (`INFO`) - Interface and object type properties

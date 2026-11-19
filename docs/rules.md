@@ -7,7 +7,7 @@ Here you will find all the rules of `epiclint`, inspired by the Epitech Coding S
 - [Rules](#rules)
   - [Severity level](#severity-level)
   - [1. Repository Organization (`ORG`)](#1-repository-organization-org)
-    - [`ORG-01` (`INFO`) - Repository cleanliness](#org-01-info---repository-cleanliness)
+    - [`ORG-01` (`MINOR`) - Repository cleanliness](#org-01-minor---repository-cleanliness)
   - [2. Formatting and Layout (`FMT`)](#2-formatting-and-layout-fmt)
     - [`FMT-01` (`MINOR`) - UNIX line endings](#fmt-01-minor---unix-line-endings)
     - [`FMT-02` (`MINOR`) - Trailing whitespace](#fmt-02-minor---trailing-whitespace)
@@ -47,7 +47,7 @@ Here you will find all the rules of `epiclint`, inspired by the Epitech Coding S
 
 ## 1. Repository Organization (`ORG`)
 
-### `ORG-01` (`INFO`) - Repository cleanliness
+### `ORG-01` (`MINOR`) - Repository cleanliness
 
 The repository must not contain any temporary files, log files, or build artifacts (`.DS_Store`, `*.db`, `*~`, `#*#`, `*.log`, ...), nor any compiled or generated files (`.js`, `.map`, ...).
 
