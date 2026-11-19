@@ -18,7 +18,7 @@
 ### 3. Control Flow and Signatures (`FLOW`)
 
 - [ ] `FLOW-01` (`MAJOR`) - One statement per line _(in progress)_
-- [ ] `FLOW-02` (`MAJOR`) - Ternary operators
+- [x] `FLOW-02` (`MAJOR`) - Ternary operators
 - [x] `FLOW-03` (`MAJOR`) - Maximum number of parameters
 
 ### 4. Variables and Scope (`VAR`)

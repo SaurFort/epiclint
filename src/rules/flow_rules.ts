@@ -1,8 +1,8 @@
 import {
     FunctionDeclaration,
-    isFunctionDeclaration,
+    isConditionalExpression,
+    isExpressionStatement,
     Node,
-    NodeFlags,
     SourceFile,
     SyntaxKind
 } from "typescript/unstable/ast";
@@ -10,6 +10,7 @@ import { LintIssue, NodeRule } from "../types";
 import { getPosition, Position } from "../utils/position";
 
 const FLOW_NODE_RULES: readonly NodeRule[] = [
+    checkFlow02,
     checkFlow03
 ];
 
@@ -31,21 +32,40 @@ export function checkFlowRules(filePath: string, sourceFile: SourceFile): LintIs
     return issues;
 }
 
-function checkVar01(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
-    if (node.kind !== SyntaxKind.VariableDeclarationList)
+function checkFlow02(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (!isConditionalExpression(node))
         return null;
-    if ((node.flags & NodeFlags.BlockScoped) !== 0)
-        return null;
-    const pos = getPosition(sourceFile, node);
+    if (isExpressionStatement(node.parent)) {
+        const pos = getPosition(sourceFile, node.parent);
 
-    return {
-        filePath,
-        line: pos.line,
-        column: pos.column,
-        code: "VAR-01",
-        severity: "error",
-        message: "'var' keyword is strictly forbidden"
-    };
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "FLOW-02",
+            severity: "major",
+            message: "Value produced by ternary operator must be used"
+        };
+    }
+
+    if (
+        isConditionalExpression(node.condition) ||
+        isConditionalExpression(node.whenTrue) ||
+        isConditionalExpression(node.whenFalse)
+    ) {
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "FLOW-02",
+            severity: "major",
+            message: "Chained and nested ternary operators are forbidden"
+        };
+    }
+
+    return null;
 }
 
 function checkFlow03(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
