@@ -1,7 +1,7 @@
 import { LintIssue } from "../types";
 
 export function checkFmtRules(filePath: string, content: string): LintIssue[] {
-    let issues: LintIssue[] = [];
+    const issues: LintIssue[] = [];
 
     if (content.length === 0)
         return issues;
@@ -9,12 +9,12 @@ export function checkFmtRules(filePath: string, content: string): LintIssue[] {
     const rawLines: string[] = content.split("\n");
     const lines: string[] = content.endsWith("\n") ? rawLines.slice(0, -1) : rawLines;
 
-    issues = issues.concat(checkFmt01(filePath, lines));
-    issues = issues.concat(checkFmt02(filePath, lines));
-    issues = issues.concat(checkFmt03(filePath, lines));
-    issues = issues.concat(checkFmt04(filePath, lines));
-    issues = issues.concat(checkFmt05(filePath, lines));
-    issues = issues.concat(checkFmt06(filePath, lines));
+    issues.push(...checkFmt01(filePath, lines));
+    issues.push(...checkFmt02(filePath, lines));
+    issues.push(...checkFmt03(filePath, lines));
+    issues.push(...checkFmt04(filePath, lines));
+    issues.push(...checkFmt05(filePath, lines));
+    issues.push(...checkFmt06(filePath, lines));
 
     return issues;
 }
