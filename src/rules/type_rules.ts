@@ -1,22 +1,20 @@
 import { Node, SourceFile, SyntaxKind } from "typescript/unstable/ast";
-import { LintIssue } from "../types";
+import { LintIssue, NodeRule } from "../types";
 import { getPosition, Position } from "../utils/position";
 
+const TYPE_NODE_RULES: readonly NodeRule[] = [
+    checkType01
+];
+
 export function checkTypeRules(filePath: string, sourceFile: SourceFile): LintIssue[] {
-    let issues: LintIssue[] = [];
+    const issues: LintIssue[] = [];
 
     function visit(node: Node): void {
-        if (node.kind === SyntaxKind.AnyKeyword) {
-            const pos: Position = getPosition(sourceFile, node);
+        for (const rule of TYPE_NODE_RULES) {
+            const issue: LintIssue | null = rule(filePath, sourceFile, node);
 
-            issues.push({
-                filePath,
-                line: pos.line,
-                column: pos.column,
-                code: "TYPE-01",
-                severity: "error",
-                message: "Explicity 'any' type is forbidden"
-            });
+            if (issue !== null)
+                issues.push(issue);
         }
 
         node.forEachChild(visit);
@@ -24,4 +22,19 @@ export function checkTypeRules(filePath: string, sourceFile: SourceFile): LintIs
 
     visit(sourceFile);
     return issues;
+}
+
+function checkType01(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (node.kind !== SyntaxKind.AnyKeyword)
+        return null;
+    const pos: Position = getPosition(sourceFile, node);
+
+    return {
+        filePath,
+        line: pos.line,
+        column: pos.column,
+        code: "TYPE-01",
+        severity: "error",
+        message: "Explicit 'any' type is forbidden"
+    };
 }
