@@ -1,9 +1,17 @@
-import { Node, NodeFlags, SourceFile, SyntaxKind } from "typescript/unstable/ast";
+import {
+    isSourceFile,
+    isVariableDeclarationList,
+    isVariableStatement,
+    Node,
+    NodeFlags,
+    SourceFile,
+} from "typescript/unstable/ast";
 import { LintIssue, NodeRule } from "../types";
-import { getPosition, Position } from "../utils/position";
+import { getPosition } from "../utils/position";
 
 const VAR_NODE_RULES: readonly NodeRule[] = [
-    checkVar01
+    checkVar01,
+    checkVar02
 ];
 
 export function checkVarRules(filePath: string, sourceFile: SourceFile): LintIssue[] {
@@ -25,11 +33,11 @@ export function checkVarRules(filePath: string, sourceFile: SourceFile): LintIss
 }
 
 function checkVar01(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
-    if (node.kind !== SyntaxKind.VariableDeclarationList)
+    if (!isVariableDeclarationList(node))
         return null;
     if ((node.flags & NodeFlags.BlockScoped) !== 0)
         return null;
-    const pos: Position = getPosition(sourceFile, node);
+    const pos = getPosition(sourceFile, node);
 
     return {
         filePath,
@@ -38,5 +46,22 @@ function checkVar01(filePath: string, sourceFile: SourceFile, node: Node): LintI
         code: "VAR-01",
         severity: "error",
         message: "'var' keyword is strictly forbidden"
+    };
+}
+
+function checkVar02(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (!isVariableStatement(node) || !isSourceFile(node.parent))
+        return null;
+    if ((node.declarationList.flags & NodeFlags.Let) === 0)
+        return null;
+    const pos = getPosition(sourceFile, node);
+
+    return {
+        filePath,
+        line: pos.line,
+        column: pos.column,
+        code: "VAR-02",
+        severity: "major",
+        message: "A 'let' should not be at the top-level module"
     };
 }
