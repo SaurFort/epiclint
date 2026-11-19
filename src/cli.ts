@@ -31,6 +31,18 @@ function formatSeverity(severity: LintIssue["severity"]): string {
     }
 }
 
+function cmdHelp(target: string): void {
+    if (target === "--help" || target === "-h") {
+        console.log("Usage: epiclint [path]\n\nOptions:\n -h, --help    Show help\n -v, --version   Show version");
+        return;
+    }
+
+    if (target === "--version" || target === "-v") {
+        console.log("epiclint v0.1.0");
+        return;
+    }
+}
+
 function main(): void {
     const rawTarget = process.argv[2] ?? ".";
     const targetPath = resolve(rawTarget);

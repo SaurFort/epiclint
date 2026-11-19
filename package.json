@@ -1,23 +1,30 @@
 {
   "name": "epiclint",
   "version": "0.1.0",
+  "description": "Unofficial TypeScript Coding Style based on Epitech C Coding Style.",
   "type": "module",
   "bin": {
     "epiclint": "./dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs/rules.md",
+    "README.md"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && tsup",
+    "dev": "tsup --watch",
+    "package": "npm run build && npm pack"
   },
-  "engines": {
-    "node": ">=20"
+  "dependencies": {
+    "typescript": "^7.0.2"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
-    "tsup": "^9.0.0",
-    "typescript": "^7.0.2"
+    "tsup": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
