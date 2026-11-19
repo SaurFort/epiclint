@@ -9,6 +9,7 @@ import { checkTypeRules } from "./rules/type_rules";
 import { API } from "typescript/unstable/sync";
 import { checkVarRules } from "./rules/var_rules";
 import { checkFlowRules } from "./rules/flow_rules";
+import { checkNameRules } from "./rules/name_rules";
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
@@ -62,6 +63,7 @@ function main(): void {
             issues.push(...checkTypeRules(filePath, sourceFile));
             issues.push(...checkVarRules(filePath, sourceFile));
             issues.push(...checkFlowRules(filePath, sourceFile));
+            issues.push(...checkNameRules(filePath, sourceFile));
         }
     } finally {
         snapshot.dispose();
