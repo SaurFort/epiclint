@@ -38,5 +38,5 @@
 
 - [ ] `NAME-01` (`INFO`) - Variables and functions (`camelCase`)
 - [x] `NAME-02` (`INFO`) - Type structures (`PascalCase`)
-- [ ] `NAME-03` (`INFO`) - Global constants and enum members (`UPPER_SNAKE_CASE`)
+- [x] `NAME-03` (`INFO`) - Global constants and enum members (`UPPER_SNAKE_CASE`)
 - [x] `NAME-04` (`INFO`) - Interface and object type properties

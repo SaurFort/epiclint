@@ -1,17 +1,26 @@
 import {
+    EnumMember,
+    isArrowFunction,
     isClassDeclaration,
     isEnumDeclaration,
+    isEnumMember,
+    isFunctionExpression,
+    isIdentifier,
     isInterfaceDeclaration,
     isPropertySignatureDeclaration,
+    isSourceFile,
     isTypeAliasDeclaration,
+    isVariableDeclaration,
+    isVariableStatement,
     Node,
-    SourceFile
+    SourceFile,
 } from "typescript/unstable/ast";
 import { LintIssue, NodeRule } from "../types";
 import { getPosition } from "../utils/position";
 
 const NAME_NODE_RULES: readonly NodeRule[] = [
     checkName02,
+    checkName03,
     checkName04
 ];
 
@@ -55,6 +64,45 @@ function checkName02(filePath: string, sourceFile: SourceFile, node: Node): Lint
         severity: "info",
         message: "Bad naming practice on type structure's name, you should use 'camelCase'"
     };
+}
+
+function checkName03(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    const regex = /^[A-Z][A-Z0-9_]*$/;
+
+    if (isEnumMember(node)) {
+        if (regex.test(node.name.getText()))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-03",
+            severity: "info",
+            message: "Bad naming practice on enum members, you should use 'UPPER_SNAKE_CASE'"
+        };
+    }
+
+    if (isVariableDeclaration(node) && isSourceFile(node.parent.parent.parent)) {
+        if (node.initializer === undefined)
+            return null;
+        if (isArrowFunction(node.initializer) || isFunctionExpression(node.initializer))
+            return null;
+        if (regex.test(node.name.getText()))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-03",
+            severity: "info",
+            message: "Bad naming practice on global const, you should use 'UPPER_SNAKE_CASE'"
+        }
+    }
+    return null;
 }
 
 function checkName04(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
