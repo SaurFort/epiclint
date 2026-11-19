@@ -1,7 +1,24 @@
+import {
+    isClassDeclaration,
+    isEnumDeclaration,
+    isFunctionDeclaration,
+    isInterfaceDeclaration,
+    isSourceFile,
+    isTypeAliasDeclaration,
+    LineAndCharacter,
+    Node,
+    SourceFile
+} from "typescript/unstable/ast";
 import { LintIssue } from "../types";
 
 type LineRule = (filePath: string, lines: string[], index: number) => LintIssue | null;
 type FileTextRule = (filePath: string, lines: string[]) => LintIssue[];
+type NodeRule = (filePath: string, sourceFile: SourceFile, node: Node) => LintIssue[];
+
+interface NodeType {
+    node: Node;
+    pos: LineAndCharacter;
+}
 
 const FMT_FILE_RULES: readonly FileTextRule[] = [
     checkFmt03
@@ -15,7 +32,15 @@ const FMT_LINE_RULES: readonly LineRule[] = [
     checkFmt06
 ];
 
-export function checkFmtRules(filePath: string, content: string): LintIssue[] {
+const FMT_NODE_RULES: readonly NodeRule[] = [
+    checkFmt07
+];
+
+export function checkFmtRules(
+    filePath: string,
+    content: string,
+    sourceFile: SourceFile
+): LintIssue[] {
     const issues: LintIssue[] = [];
 
     if (content.length === 0)
@@ -36,6 +61,15 @@ export function checkFmtRules(filePath: string, content: string): LintIssue[] {
         }
     }
 
+    function visit(node: Node): void {
+        for (const rule of FMT_NODE_RULES) {
+            issues.push(...rule(filePath, sourceFile, node));
+        }
+
+        node.forEachChild(visit);
+    }
+
+    visit(sourceFile);
     return issues;
 }
 
@@ -50,7 +84,7 @@ function checkFmt01(filePath: string, lines: string[], index: number): LintIssue
         line: index + 1,
         column: rawLine.length,
         code: "FMT-01",
-        severity: "major",
+        severity: "minor",
         message: "CRLF (\\r\\n) line ending detected; use UNIX LF (\\n)"
     };
 }
@@ -168,4 +202,72 @@ function checkFmt06(filePath: string, lines: string[], index: number): LintIssue
         severity: "minor",
         message: "Multiple consecutive blank lines"
     };
+}
+
+function checkFmt07(filePath: string, sourceFile: SourceFile, node: Node): LintIssue[] {
+    if (!isSourceFile(node))
+        return [];
+    const issues: LintIssue[] = []
+    let previous: NodeType | null = null;
+
+    for (const statement of node.statements) {
+        if (
+            !isFunctionDeclaration(statement) &&
+            !isClassDeclaration(statement) &&
+            !isInterfaceDeclaration(statement) &&
+            !isEnumDeclaration(statement) &&
+            !isTypeAliasDeclaration(statement)
+        ) {
+            previous = null;
+            continue;
+        }
+
+        if (!previous) {
+            previous = {
+                node: statement,
+                pos: sourceFile.getLineAndCharacterOfPosition(statement.getEnd())
+            };
+            continue;
+        }
+        const current: NodeType = {
+            node: statement,
+            pos: sourceFile.getLineAndCharacterOfPosition(statement.getStart())
+        };
+        const diff = current.pos.line - previous.pos.line;
+
+        if (diff < 2) {
+            if (isTypeAliasDeclaration(statement)) {
+                if (isTypeAliasDeclaration(previous.node)) {
+                    continue;
+                }
+            }
+
+            issues.push({
+                filePath,
+                line: current.pos.line + 1,
+                column: 1,
+                code: "FMT-07",
+                severity: "minor",
+                message: "Function declarations, classes, and top-level block must be separated" +
+                    " by only one blank line"
+            });
+        } else if (diff > 2) {
+            issues.push({
+                filePath,
+                line: current.pos.line + 1,
+                column: 1,
+                code: "FMT-07",
+                severity: "minor",
+                message: "Function declarations, classes, and top-level block must be separated" +
+                    " by only one blank line"
+            });
+        }
+
+        previous = {
+            node: statement,
+            pos: sourceFile.getLineAndCharacterOfPosition(statement.getEnd())
+        };
+    }
+
+    return issues;
 }

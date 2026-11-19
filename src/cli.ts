@@ -62,24 +62,19 @@ function main(): void {
     }
 
     const { tsFiles, issues } = scanTarget(targetPath);
-
-    for (const filePath of tsFiles) {
-        const content = readFileSync(filePath, "utf-8");
-
-        issues.push(...checkFmtRules(filePath, content));
-    }
-
     const api = new API({})
     const snapshot = api.updateSnapshot({ openFiles: tsFiles });
 
     try {
         for (const filePath of tsFiles) {
+            const content = readFileSync(filePath, "utf-8");
             const project = snapshot.getDefaultProjectForFile(filePath);
             const sourceFile = project?.program.getSourceFile(filePath);
 
             if (sourceFile === undefined)
                 continue;
 
+            issues.push(...checkFmtRules(filePath, content, sourceFile));
             issues.push(...checkTypeRules(filePath, sourceFile));
             issues.push(...checkVarRules(filePath, sourceFile));
             issues.push(...checkFlowRules(filePath, sourceFile));
