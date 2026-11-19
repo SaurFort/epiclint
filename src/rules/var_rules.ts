@@ -1,4 +1,6 @@
 import {
+    isForInStatement,
+    isForOfStatement,
     isSourceFile,
     isVariableDeclarationList,
     isVariableStatement,
@@ -11,7 +13,8 @@ import { getPosition } from "../utils/position";
 
 const VAR_NODE_RULES: readonly NodeRule[] = [
     checkVar01,
-    checkVar02
+    checkVar02,
+    checkVar04
 ];
 
 export function checkVarRules(filePath: string, sourceFile: SourceFile): LintIssue[] {
@@ -63,5 +66,29 @@ function checkVar02(filePath: string, sourceFile: SourceFile, node: Node): LintI
         code: "VAR-02",
         severity: "major",
         message: "A 'let' should not be at the top-level module"
+    };
+}
+
+function checkVar04(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (!isVariableStatement(node))
+        return null;
+    if ((node.declarationList.flags & NodeFlags.Let) === 0)
+        return null;
+    if (isForOfStatement(node.parent) || isForInStatement(node.parent))
+        return null;
+    const pos = getPosition(sourceFile, node);
+
+    for (const decl of node.declarationList.declarations) {
+        if (decl.type !== undefined)
+            return null;
+    }
+
+    return {
+        filePath,
+        line: pos.line,
+        column: pos.column,
+        code: "VAR-04",
+        severity: "major",
+        message: "'let' should be explicitly typed"
     };
 }

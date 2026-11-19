@@ -26,7 +26,7 @@
 - [x] `VAR-01` (`ERROR`) - Prohibition of `var`
 - [x] `VAR-02` (`MAJOR`) - Prohibition of mutable global variables
 - [ ] `VAR-03` (`MINOR`) - Mandatory `const` when never reassigned
-- [ ] `VAR-04` (`MAJOR`) - Explicit type annotation on `let`
+- [x] `VAR-04` (`MAJOR`) - Explicit type annotation on `let`
 
 ### 5. Strict TypeScript Typing (`TYPE`)
 
