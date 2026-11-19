@@ -23,11 +23,11 @@ function formatSeverity(severity: LintIssue["severity"]): string {
         case "error":
             return `${RED}ERROR${RESET}`;
         case "major":
-            return `${YELLOW}MAJOR${RESET}`;
+            return `${MAGENTA}MAJOR${RESET}`;
         case "minor":
-            return `${CYAN}MINOR${RESET}`;
+            return `${YELLOW}MINOR${RESET}`;
         default:
-            return `${MAGENTA}INFO${RESET}`;
+            return `${CYAN}INFO${RESET}`;
     }
 }
 
@@ -93,9 +93,9 @@ function main(): void {
     console.log(
         `\nChecked ${tsFiles.length} file(s) - ` +
         `${RED}${errorCount} error${RESET}, `,
-        `${YELLOW}${majorCount} major${RESET}, `,
-        `${CYAN}${minorCount} minor${RESET}, `,
-        `${MAGENTA}${infoCount} info${RESET}`
+        `${MAGENTA}${majorCount} major${RESET}, `,
+        `${YELLOW}${minorCount} minor${RESET}, `,
+        `${CYAN}${infoCount} info${RESET}`
     );
 
     if (issues.length > 0)
