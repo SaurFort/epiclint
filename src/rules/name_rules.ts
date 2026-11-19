@@ -4,9 +4,12 @@ import {
     isClassDeclaration,
     isEnumDeclaration,
     isEnumMember,
+    isFunctionDeclaration,
     isFunctionExpression,
     isIdentifier,
     isInterfaceDeclaration,
+    isMethodDeclaration,
+    isParameterDeclaration,
     isPropertySignatureDeclaration,
     isSourceFile,
     isTypeAliasDeclaration,
@@ -19,6 +22,7 @@ import { LintIssue, NodeRule } from "../types";
 import { getPosition } from "../utils/position";
 
 const NAME_NODE_RULES: readonly NodeRule[] = [
+    checkName01,
     checkName02,
     checkName03,
     checkName04
@@ -40,6 +44,78 @@ export function checkNameRules(filePath: string, sourceFile: SourceFile): LintIs
 
     visit(sourceFile);
     return issues;
+}
+
+function checkName01(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    const regex = /^[a-z][a-zA-Z0-9]*$/;
+
+    if (isFunctionDeclaration(node)) {
+        if (!node.name?.text)
+            return null;
+        if (regex.test(node.name.text))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-01",
+            severity: "info",
+            message: "Bad naming practice for function's name, you should use 'camelCase'"
+        };
+    }
+
+    if (isMethodDeclaration(node)) {
+        if (regex.test(node.name.getText()))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-01",
+            severity: "info",
+            message: "Bad naming practice for method's name, you should use 'camelCase'"
+        }
+    }
+
+    if (isParameterDeclaration(node)) {
+        if (regex.test(node.name.getText()))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-01",
+            severity: "info",
+            message: "Bad naming practice for parameter's name, you should use 'camelCase'"
+        };
+    }
+
+    if (isVariableDeclaration(node) && isSourceFile(node.parent.parent.parent)) {
+        if (node.initializer === undefined)
+            return null;
+        if (!isArrowFunction(node.initializer) && !isFunctionExpression(node.initializer))
+            return null;
+        if (regex.test(node.name.getText()))
+            return null;
+        const pos = getPosition(sourceFile, node);
+
+        return {
+            filePath,
+            line: pos.line,
+            column: pos.column,
+            code: "NAME-01",
+            severity: "info",
+            message: "Bad naming practice for function's name, you should use 'camelCase'"
+        }
+    }
+
+    return null;
 }
 
 function checkName02(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
