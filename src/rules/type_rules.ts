@@ -3,7 +3,8 @@ import { LintIssue, NodeRule } from "../types";
 import { getPosition, Position } from "../utils/position";
 
 const TYPE_NODE_RULES: readonly NodeRule[] = [
-    checkType01
+    checkType01,
+    checkType02
 ];
 
 export function checkTypeRules(filePath: string, sourceFile: SourceFile): LintIssue[] {
@@ -36,5 +37,20 @@ function checkType01(filePath: string, sourceFile: SourceFile, node: Node): Lint
         code: "TYPE-01",
         severity: "error",
         message: "Explicit 'any' type is forbidden"
+    };
+}
+
+function checkType02(filePath: string, sourceFile: SourceFile, node: Node): LintIssue | null {
+    if (node.kind !== SyntaxKind.NonNullExpression)
+        return null;
+    const pos: Position = getPosition(sourceFile, node);
+
+    return {
+        filePath,
+        line: pos.line,
+        column: pos.column,
+        code: "TYPE-02",
+        severity: "error",
+        message: "Forbidden non-null assertion operator"
     };
 }
