@@ -1,6 +1,6 @@
 {
   "name": "epiclint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unofficial TypeScript Coding Style based on Epitech C Coding Style.",
   "type": "module",
   "bin": {
@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && tsup",
     "dev": "tsup --watch",
-    "package": "npm run build && npm pack"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "typescript": "^7.0.2"
