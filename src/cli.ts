@@ -4,7 +4,7 @@ import { relative, resolve } from "node:path";
 import { LintIssue } from "./types";
 import { existsSync, readFileSync } from "node:fs";
 import { scanTarget } from "./scanner";
-import { checkTextRules } from "./rules/text_rules";
+import { checkFmtRules } from "./rules/fmt_rules";
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
@@ -41,7 +41,7 @@ function main(): void {
     for (const filePath of tsFiles) {
         const content = readFileSync(filePath, "utf-8");
 
-        issues.push(...checkTextRules(filePath, content));
+        issues.push(...checkFmtRules(filePath, content));
     }
 
     issues.sort((a: LintIssue, b: LintIssue): number => {
