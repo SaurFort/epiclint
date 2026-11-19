@@ -31,21 +31,25 @@ function formatSeverity(severity: LintIssue["severity"]): string {
     }
 }
 
-function cmdHelp(target: string): void {
+function cmdHelp(target: string): boolean {
     if (target === "--help" || target === "-h") {
         console.log("Usage: epiclint [path]\n\nOptions:\n -h, --help    Show help\n -v, --version   Show version");
-        return;
+        return true;
     }
 
     if (target === "--version" || target === "-v") {
         console.log("epiclint v0.1.0");
-        return;
+        return true;
     }
+    return false;
 }
 
 function main(): void {
     const rawTarget = process.argv[2] ?? ".";
     const targetPath = resolve(rawTarget);
+
+    if (cmdHelp(rawTarget))
+        return;
 
     if (!existsSync(targetPath)) {
         console.error(`${RED}Error:${RESET} Path not found: ${rawTarget}`);
