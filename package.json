@@ -1,6 +1,6 @@
 {
   "name": "epiclint",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Unofficial TypeScript Coding Style based on Epitech C Coding Style.",
   "type": "module",
   "bin": {
