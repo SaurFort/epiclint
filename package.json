@@ -4,7 +4,7 @@
   "description": "Unofficial TypeScript Coding Style based on Epitech C Coding Style.",
   "type": "module",
   "bin": {
-    "epiclint": "./dist/cli.js"
+    "epiclint": "dist/cli.js"
   },
   "files": [
     "dist",
