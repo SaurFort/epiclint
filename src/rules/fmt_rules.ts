@@ -9,16 +9,11 @@ import {
     Node,
     SourceFile
 } from "typescript/unstable/ast";
-import { LintIssue } from "../types";
+import { LintIssue, LocatedNode } from "../types";
 
 type LineRule = (filePath: string, lines: string[], index: number) => LintIssue | null;
 type FileTextRule = (filePath: string, lines: string[]) => LintIssue[];
 type NodeRule = (filePath: string, sourceFile: SourceFile, node: Node) => LintIssue[];
-
-interface NodeType {
-    node: Node;
-    pos: LineAndCharacter;
-}
 
 const FMT_FILE_RULES: readonly FileTextRule[] = [
     checkFmt03
@@ -208,7 +203,7 @@ function checkFmt07(filePath: string, sourceFile: SourceFile, node: Node): LintI
     if (!isSourceFile(node))
         return [];
     const issues: LintIssue[] = []
-    let previous: NodeType | null = null;
+    let previous: LocatedNode | null = null;
 
     for (const statement of node.statements) {
         if (
@@ -229,7 +224,7 @@ function checkFmt07(filePath: string, sourceFile: SourceFile, node: Node): LintI
             };
             continue;
         }
-        const current: NodeType = {
+        const current: LocatedNode = {
             node: statement,
             pos: sourceFile.getLineAndCharacterOfPosition(statement.getStart())
         };

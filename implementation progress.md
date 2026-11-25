@@ -12,12 +12,12 @@
 - [x] `FMT-04` (`MINOR`) - Maximum line length
 - [x] `FMT-05` (`MINOR`) - Indentation
 - [x] `FMT-06` (`MINOR`) - Consecutive blank lines
-- [ ] `FMT-07` (`MINOR`) - Separation of top-level declarations
+- [x] `FMT-07` (`MINOR`) - Separation of top-level declarations
 - [ ] `FMT-08` (`MINOR`) - Spacing around operators and separators
 
 ### 3. Control Flow and Signatures (`FLOW`)
 
-- [ ] `FLOW-01` (`MAJOR`) - One statement per line
+- [x] `FLOW-01` (`MAJOR`) - One statement per line
 - [x] `FLOW-02` (`MAJOR`) - Ternary operators
 - [x] `FLOW-03` (`MAJOR`) - Maximum number of parameters
 

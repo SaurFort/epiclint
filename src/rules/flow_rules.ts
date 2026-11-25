@@ -1,13 +1,30 @@
 import {
+    Block,
+    DoStatement,
     FunctionDeclaration,
+    IfStatement,
+    isBinaryExpression,
+    isBlock,
     isConditionalExpression,
+    isDoStatement,
+    isEqualsToken,
     isExpressionStatement,
+    isIfStatement,
+    isSourceFile,
+    isWhileStatement,
     Node,
     SourceFile,
-    SyntaxKind
+    SyntaxKind,
+    WhileStatement
 } from "typescript/unstable/ast";
 import { LintIssue, NodeRule } from "../types";
-import { getPosition, Position } from "../utils/position";
+import { getPosition } from "../utils/position";
+
+type NodeRules = (filePath: string, sourceFile: SourceFile, node: Node) => LintIssue[];
+
+const FLOW_MULTI_ISSUE: readonly NodeRules[] = [
+    checkFlow01
+]
 
 const FLOW_NODE_RULES: readonly NodeRule[] = [
     checkFlow02,
@@ -25,10 +42,57 @@ export function checkFlowRules(filePath: string, sourceFile: SourceFile): LintIs
                 issues.push(issue);
         }
 
+        for (const rule of FLOW_MULTI_ISSUE) {
+            const issue: LintIssue[] = rule(filePath, sourceFile, node);
+
+            if (issue !== null)
+                issues.push(...issue);
+        }
+
         node.forEachChild(visit)
     }
 
     visit(sourceFile);
+    return issues;
+}
+
+function checkFlow01(filePath: string, sourceFile: SourceFile, node: Node): LintIssue[] {
+    const issues: LintIssue[] = [];
+
+    if (isSourceFile(node) || isBlock(node)) {
+        const n = node as SourceFile | Block
+
+        for (const statement of n.statements) {
+            if (statement.getStart() === statement.getEnd()) {
+                const pos = getPosition(sourceFile, statement);
+
+                issues.push({
+                    filePath,
+                    line: pos.line,
+                    column: pos.column,
+                    code: "FLOW-01",
+                    severity: "major",
+                    message: "Start and end of statement should not be on the same line"
+                });
+            }
+        }
+    }
+
+    if (isIfStatement(node) || isWhileStatement(node) || isDoStatement(node)) {
+        if (isBinaryExpression(node.expression) && isEqualsToken(node.expression.operatorToken)) {
+            const pos = getPosition(sourceFile, node.expression);
+
+            issues.push({
+                filePath,
+                line: pos.line,
+                column: pos.column,
+                code: "FLOW-01",
+                severity: "major",
+                message: "Assignation in statements are forbidden"
+            });
+        }
+    }
+
     return issues;
 }
 
