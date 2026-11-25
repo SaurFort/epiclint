@@ -17,3 +17,10 @@ export interface LocatedNode {
     node: Node;
     pos: LineAndCharacter;
 }
+
+export interface CliOptions {
+    target: string;
+    showInfo: boolean;
+    help: boolean;
+    version: boolean;
+}

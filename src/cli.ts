@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { relative, resolve } from "node:path";
-import { LintIssue } from "./types";
+import { CliOptions, LintIssue } from "./types";
 import { existsSync, readFileSync } from "node:fs";
 import { scanTarget } from "./scanner";
 import { checkFmtRules } from "./rules/fmt_rules";
@@ -10,14 +10,8 @@ import { API } from "typescript/unstable/sync";
 import { checkVarRules } from "./rules/var_rules";
 import { checkFlowRules } from "./rules/flow_rules";
 import { checkNameRules } from "./rules/name_rules";
-import pkg from "../package.json"
-
-const RED = "\x1b[31m";
-const YELLOW = "\x1b[33m";
-const CYAN = "\x1b[36m";
-const MAGENTA = "\x1b[35m";
-const BOLD = "\x1b[1m";
-const RESET = "\x1b[0m";
+import { BOLD, CYAN, MAGENTA, RED, RESET, YELLOW } from "./utils/colors";
+import { handleMetaFlags, parseCliArgs } from "./args";
 
 function formatSeverity(severity: LintIssue["severity"]): string {
     switch (severity) {
@@ -32,32 +26,21 @@ function formatSeverity(severity: LintIssue["severity"]): string {
     }
 }
 
-function cmdHelp(target: string): boolean {
-    if (target === "--help" || target === "-h") {
-        console.log(
-            "Usage: epiclint [path]\n\nOptions:\n" +
-            " -h, --help    Show help\n" +
-            " -v, --version   Show version"
-        );
-        return true;
-    }
-
-    if (target === "--version" || target === "-v") {
-        console.log(`epiclint v${pkg.version}`);
-        return true;
-    }
-    return false;
-}
-
 function main(): void {
-    const rawTarget = process.argv[2] ?? ".";
-    const targetPath = resolve(rawTarget);
+    const options: CliOptions | null = parseCliArgs(process.argv.slice(2));
 
-    if (cmdHelp(rawTarget))
+    if (options === null) {
+        process.exitCode = -1;
+        return;
+    }
+
+    if (handleMetaFlags(options))
         return;
 
+    const targetPath = resolve(options.target);
+
     if (!existsSync(targetPath)) {
-        console.error(`${RED}Error:${RESET} Path not found: ${rawTarget}`);
+        console.error(`${RED}Error:${RESET} Path not found: ${options.target}`);
         process.exitCode = 1;
         return;
     }
@@ -93,6 +76,9 @@ function main(): void {
     });
 
     for (const issue of issues) {
+        if (issue.severity === "info" && !options.showInfo)
+            continue;
+
         const relPath = relative(process.cwd(), issue.filePath) || issue.filePath;
 
         console.log(
