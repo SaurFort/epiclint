@@ -10,6 +10,7 @@ import { API } from "typescript/unstable/sync";
 import { checkVarRules } from "./rules/var_rules";
 import { checkFlowRules } from "./rules/flow_rules";
 import { checkNameRules } from "./rules/name_rules";
+import pkg from "../package.json"
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
@@ -42,7 +43,7 @@ function cmdHelp(target: string): boolean {
     }
 
     if (target === "--version" || target === "-v") {
-        console.log("epiclint v0.1.0");
+        console.log(`epiclint v${pkg.version}`);
         return true;
     }
     return false;
